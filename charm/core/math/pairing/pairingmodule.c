@@ -121,17 +121,17 @@ PyObject *mpzToLongObj (mpz_t m)
 	mpz_init_set (temp, m);
 	for (i = 0; i < size; i++)
 	{
-		l->ob_digit[i] = (digit) (mpz_get_ui (temp) & PyLong_MASK);
+		l->long_value.ob_digit[i] = (digit) (mpz_get_ui (temp) & PyLong_MASK);
 		mpz_fdiv_q_2exp (temp, temp, PyLong_SHIFT);
 	}
 	i = size;
-	while ((i > 0) && (l->ob_digit[i - 1] == 0))
+	while ((i > 0) && (l->long_value.ob_digit[i - 1] == 0))
 		i--;
 	if(isNeg) {
-		Py_SIZE(l) = -i;
+		Py_SET_SIZE(l,-i);
 	}
 	else {
-		Py_SIZE(l) = i;
+		Py_SET_SIZE(l,i);
 	}
 	mpz_clear (temp);
 	return (PyObject *) l;
@@ -153,7 +153,7 @@ void longObjToMPZ (mpz_t m, PyLongObject * p)
 	mpz_set_ui (m, 0);
 	for (i = 0; i < size; i++)
 	{
-		mpz_set_ui (temp, p->ob_digit[i]);
+		mpz_set_ui (temp, p->long_value.ob_digit[i]);
 		mpz_mul_2exp (temp2, temp, PyLong_SHIFT * i);
 		mpz_add (m, m, temp2);
 	}
